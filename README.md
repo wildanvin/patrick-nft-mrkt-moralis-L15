@@ -1,3 +1,59 @@
+# Lesson 15 in Patrick's course with Moralis front end
+
+In this section we use moralis backend to make the front end easier to build. Moralis provides a database, cloud functions, listen and indexes event of our protocol so we can display that information in the front end easily and saving gas in the process.
+
+Some point that I want to remember:
+
+- The period at the end is important it creates the project in the same directory: `yarn create next-app .`
+
+- Try to not change (much) the protocol for the website
+
+- We used a fast reverse proxy to expose the local blockchain to Moralis Servers, use the `moralis-admin-cli` to connect to the moralis server, pretty cool.
+
+- We use the moralis servers with our local blockchain.
+
+Steps to working with moralis servers:
+
+1. run local hardhat network
+2. connect to moralis using: `yarn moralis:sync`, we should be "connected" in the front end of Moralis admin page.
+3. now run: `node addEvents.js` this will add the events that we want to listen to Moralis programatically
+   now we mint and list using a script: `hh run scripts/mint-and-list-item.js --network localhost`
+4. Now we have to use Moralis cloud functions to update the database every time an event happens in the local blockchain with. By running `yarn moralis:cloud` we update our cloud functions to moralis
+
+- How to call a function from a contract using `react-moralis`
+
+```js
+const { runContractFunction: buyItem } = useWeb3Contract({
+  abi: nftMarketplaceAbi,
+  contractAddress: marketplaceAddress,
+  functionName: 'buyItem',
+  msgValue: price,
+  params: {
+    nftAddress: nftAddress,
+    tokenId: tokenId,
+  },
+})
+```
+
+To transform from ETH to wei and make a transaction
+
+```js
+const price = ethers.utils
+  .parseUnits(data.data[2].inputResult, 'ether')
+  .toString()
+```
+
+- Remember to get the chainId from moralis (parse it to string) and
+  the adressess that you are going to need
+
+```js
+const { chainId, account, isWeb3Enabled } = useMoralis()
+const chainString = chainId ? parseInt(chainId).toString() : '31337'
+const marketplaceAddress = networkMapping[chainString].NftMarketplace[0]
+```
+
+Patrick is **aaaawesome!**
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
