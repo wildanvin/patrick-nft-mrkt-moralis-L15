@@ -4,8 +4,12 @@ import { MoralisProvider } from 'react-moralis'
 import Header from '../components/Header'
 import { NotificationProvider } from 'web3uikit'
 
-const APP_ID = process.env.NEXT_PUBLIC_APP_ID
-const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL
+import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client'
+
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  uri: process.env.NEXT_PUBLIC_SUBGRAPH_URL,
+})
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -15,11 +19,13 @@ function MyApp({ Component, pageProps }) {
         <meta name='description' content='Tutorial Nft Marketplace' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <MoralisProvider appId={APP_ID} serverUrl={SERVER_URL}>
-        <NotificationProvider>
-          <Header />
-          <Component {...pageProps} />
-        </NotificationProvider>
+      <MoralisProvider initializeOnMount={false}>
+        <ApolloProvider client={client}>
+          <NotificationProvider>
+            <Header />
+            <Component {...pageProps} />
+          </NotificationProvider>
+        </ApolloProvider>
       </MoralisProvider>
     </>
   )
